@@ -62,7 +62,7 @@ public class FixedTerminationEvent extends RepetitiveEvent {
      * @return the termination date of this repetitive event
      */
     public LocalDate getTerminationDate() {
-        return this.getStart().plusDays(this.getDuration().toDays()).toLocalDate();
+        return this.getStart().plus(this.getDuration().toSeconds(), ChronoUnit.SECONDS).toLocalDate();
         // TODO : implémenter cette méthode
        // throw new UnsupportedOperationException("Pas encore implémenté");   
     }
