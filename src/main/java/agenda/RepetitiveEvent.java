@@ -2,6 +2,7 @@ package agenda;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 /**
  * Description : A repetitive Event
@@ -9,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 public class RepetitiveEvent extends Event {
     
     private ChronoUnit frequency;
+    private List<LocalDate> listException = new LinkedList<>();
     
     /**
      * Constructs a repetitive event
@@ -30,23 +32,24 @@ public class RepetitiveEvent extends Event {
     }
     
     public boolean isInDay(LocalDate aDay) {
-        int n=0;
-        long f= this.frequency.getDuration().toSeconds();
-        LocalDateTime start;
-        boolean result = true;
-        while(n>0){
-           long duree = this.getDuration().toSeconds();
-           start = this.getStart().plus(f,ChronoUnit.SECONDS);
-           
-            if (!aDay.isBefore(start.toLocalDate()) && !aDay.isAfter(this.getStart().plus(duree, ChronoUnit.SECONDS).toLocalDate())){
-                result = true;
-            }
-            else{
-                result = false;
-            }
-            n+=1;
+        boolean result = false;
+        switch (this.getFrequency()) {
+            case DAYS :
+                if (this.isInDay(aDay) && aDay.isAfter(this.getStart().toLocalDate())) {
+                    result = true;
+                }
+                break;
+            case WEEKS :
+                if (this.isInDay(aDay) && aDay.getDayOfWeek() == this.getStart().getDayOfWeek()) {
+                    result = true;
+                }
+                break;
+            case MONTHS :
+                if (this.isInDay(aDay) && aDay.getDayOfMonth() == this.getStart().getDayOfMonth()) {
+                    result = true;
+                }
+                break;
         }
-        
         return result;
     }
 
@@ -56,12 +59,9 @@ public class RepetitiveEvent extends Event {
      * @param date the event will not occur at this date
      */
     public void addException(LocalDate date) {
-        try {
-            this.isInDay(date);
-        } catch (Exception e) {
-            System.out.println("Cette événement n'a pas lieu pour ce jour.");
+        if (!this.isInDay(date)) {
+            listException.add(date);
         }
- 
     }
 
     /**
