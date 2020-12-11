@@ -71,7 +71,9 @@ public class Event {
     public Duration getDuration() {
         return myDuration;
     }
-
-   
+    
+    public String toString() {
+        return "Nom de l'événement : " + this.myTitle;
+    }
     
 }
