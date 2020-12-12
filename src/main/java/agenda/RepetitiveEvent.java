@@ -31,6 +31,7 @@ public class RepetitiveEvent extends Event {
        
     }
     
+    @Override
     public boolean isInDay(LocalDate aDay) {
         boolean result = false;
         switch (this.getFrequency()) {

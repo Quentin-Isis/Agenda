@@ -1,6 +1,7 @@
 package agenda;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -33,5 +34,37 @@ public class Agenda {
           }  
         }
         return EinD;
+    }
+    
+     /**
+     * Trouver les événements de l'agenda en fonction de leur titre
+     * @param title le titre à rechercher
+     * @return les événements qui ont le même titre
+     */
+    public List<Event> findByTitle(String title) {
+        List<Event> Title = new ArrayList<>();
+        for (int i=0; i<=event.size()-1; i++) {
+          if (event.get(i).getTitle() == title) {
+            Collections.addAll(Title,event.get(i));
+          }  
+        }
+        return Title;
+    }
+    
+    /**
+     * Déterminer s’il y a de la place dans l'agenda pour un événement
+     * @param e L'événement à tester (on se limitera aux événements simples)
+     * @return vrai s’il y a de la place dans l'agenda pour cet événement
+     */
+    public boolean isFreeFor(Event e) {
+        boolean result = true; 
+        long duree = e.getDuration().toSeconds();
+        for (int i=0; i<=event.size()-1; i++) {
+          if (!event.get(i).getStart().toLocalDate().isBefore(e.getStart().toLocalDate()) && !event.get(i).getStart().toLocalDate().isAfter(e.getStart().plus(duree, ChronoUnit.SECONDS).toLocalDate())){
+              result = false;
+          }
+        }
+        return result;
+        
     }
 }
