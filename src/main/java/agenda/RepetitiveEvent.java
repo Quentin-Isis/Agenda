@@ -33,36 +33,80 @@ public class RepetitiveEvent extends Event {
     
     @Override
     public boolean isInDay(LocalDate aDay) {
-        boolean result = false;
-        switch (this.getFrequency()) {
+        if (listException.contains(aDay)) {
+            return false;
+        }
+        LocalDateTime debutPresumee = this.getStart();
+        LocalDateTime finPresumee = debutPresumee.plus(this.getDuration());
+        while (aDay.isAfter(finPresumee.toLocalDate()) && aDay.plus(1, frequency).isAfter(debutPresumee.toLocalDate())) {
+            switch (this.frequency) {
             case DAYS :
-                if (this.isInDay(aDay) && aDay.isAfter(this.getStart().toLocalDate())) {
-                    result = true;
-                }
+                debutPresumee = debutPresumee.plus(1, ChronoUnit.DAYS);
+                finPresumee = debutPresumee.plus(this.getDuration());
                 break;
             case WEEKS :
-                if (this.isInDay(aDay) && aDay.getDayOfWeek() == this.getStart().getDayOfWeek()) {
-                    result = true;
-                }
+               debutPresumee = debutPresumee.plus(1, ChronoUnit.WEEKS);
+                finPresumee = debutPresumee.plus(this.getDuration());
+                
                 break;
             case MONTHS :
-                if (this.isInDay(aDay) && aDay.getDayOfMonth() == this.getStart().getDayOfMonth()) {
-                    result = true;
-                }
+                debutPresumee = debutPresumee.plus(1, ChronoUnit.MONTHS);
+                finPresumee = debutPresumee.plus(this.getDuration());
                 break;
+            }
         }
-        return result;
+        if(aDay.isEqual(debutPresumee.toLocalDate()) || aDay.isEqual(finPresumee.toLocalDate())){
+            return true;
+        }
+        else if (aDay.isBefore(finPresumee.toLocalDate()) && aDay.isAfter(debutPresumee.toLocalDate())) {
+            return true;
+        }
+        return false;
     }
-
+    
+    
+    
+    /*public boolean isInDay(LocalDate aDay) {
+        
+        if (listException.contains(aDay)) {
+            return false;
+        }
+        
+        LocalDateTime debutPresumee = this.getStart();
+        LocalDateTime finPresumee = debutPresumee.plus(this.getDuration());
+        while (!aDay.isBefore(this.getStart().toLocalDate()) && !aDay.isAfter(this.getStart().plus(this.getDuration().toSeconds(), ChronoUnit.SECONDS).toLocalDate())) {
+       // while (aDay.isAfter(debutPresumee.toLocalDate()) && aDay.isBefore(finPresumee.plus(1, frequency).toLocalDate())) {
+            switch (this.getFrequency()) {
+            case DAYS :
+                debutPresumee = debutPresumee.plus(1, ChronoUnit.DAYS);
+                finPresumee = debutPresumee.plus(this.getDuration());
+                break;
+            case WEEKS :
+               debutPresumee = debutPresumee.plus(1, ChronoUnit.WEEKS);
+                finPresumee = debutPresumee.plus(this.getDuration());
+                
+                break;
+            case MONTHS :
+                debutPresumee = debutPresumee.plus(1, ChronoUnit.MONTHS);
+                finPresumee = debutPresumee.plus(this.getDuration());
+                break;
+            }
+        }
+        
+        if (aDay.isBefore(finPresumee.toLocalDate()) && aDay.isAfter(debutPresumee.toLocalDate())) {
+            return true;
+        }
+        
+        return false;
+    }
+        */
     /**
      * Adds an exception to the occurrence of this repetitive event
      *
      * @param date the event will not occur at this date
      */
     public void addException(LocalDate date) {
-        if (!this.isInDay(date)) {
-            listException.add(date);
-        }
+        listException.add(date);
     }
 
     /**
